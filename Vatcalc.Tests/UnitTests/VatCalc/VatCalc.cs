@@ -3,37 +3,42 @@
 namespace Vatcalc.Tests.UnitTests.VatCalc;
 public class VatCalc {
 
-	[Theory]
-	[InlineData(100, 10, 110, 10)]
-	[InlineData(13, 1.69, 14.69, 13)]
-	[InlineData(150000, 30000, 180000, 20)]
-	public async Task Calc(decimal netValueEur, decimal grossValueEur, decimal vatAmountEur, decimal vatRate) {
+	[Fact]
+	public async Task GetVatAmounts() {
+		var inputs = new List<VatQuery>() {
+			new VatQuery(100m, 110m, 10m, 10m),
+			new VatQuery(13m, 14.69m, 1.69m, 13m),
+			new VatQuery(150000m, 180000m, 30000m, 20m)
+		};
 		var handler = new VatHandler();
-		var netInputResponse = await handler.Handle(new VatQuery(netValueEur, null, null, vatRate), new CancellationToken());
-		ValidateResponse(netValueEur, grossValueEur, vatAmountEur, netInputResponse);
-		var grossInputResponse = await handler.Handle(new VatQuery(null, grossValueEur, null, vatRate), new CancellationToken());
-		ValidateResponse(netValueEur, grossValueEur, vatAmountEur, grossInputResponse);
-		var vatAmountInputResponse = await handler.Handle(new VatQuery(null, null, vatAmountEur, vatRate), new CancellationToken());
-		ValidateResponse(netValueEur, grossValueEur, vatAmountEur, vatAmountInputResponse);
+		foreach (var input in inputs) {
+			var netInputResponse = await handler.Handle(new VatQuery(input.NetEur, null, null, input.VatRatePercentage), new CancellationToken());
+			ValidateResponse(input, netInputResponse);
+			var grossInputResponse = await handler.Handle(new VatQuery(null, input.GrossEur, null, input.VatRatePercentage), new CancellationToken());
+			ValidateResponse(input, grossInputResponse);
+			var vatAmountInputResponse = await handler.Handle(new VatQuery(null, null, input.VatAmountEur, input.VatRatePercentage), new CancellationToken());
+			ValidateResponse(input, vatAmountInputResponse);
+		}
 	}
-	private static void ValidateResponse(decimal netValueEur, decimal grossValueEur, decimal vatAmountEur, VatResponse response) {
-		Assert.Equal(netValueEur, response.NetEur);
-		Assert.Equal(grossValueEur, response.GrossEur);
-		Assert.Equal(vatAmountEur, response.VatAmountEur);
+	private static void ValidateResponse(VatQuery expected, VatResponse response) {
+		Assert.Equal(expected.NetEur, response.NetEur);
+		Assert.Equal(expected.GrossEur, response.GrossEur);
+		Assert.Equal(expected.VatAmountEur, response.VatAmountEur);
+		Assert.Equal(expected.VatRatePercentage, response.VatRatePercentage);
 	}
 	[Fact]
-	public async Task MissingOrInvalidAmountInput() {
+	public async Task ThrowMissingOrInvalidAmountInput() {
 		var handler = new VatHandler();
 		await Assert.ThrowsAsync<InvalidAmountException>(async () => {
 			await handler.Handle(new VatQuery(null, null, null, 20), new CancellationToken());
 		});
 	}
 	[Fact]
-	public async Task MoreThanOneInput() {
+	public async Task ThrowMoreThanOneInput() {
 		var inputs = new List<VatQuery>() {
-			new VatQuery(100m, 10m, null, 10m),
-			new VatQuery(13m, null, 14.69m, 13m),
-			new VatQuery(null, 30000m, 180000m, 20m)
+			new VatQuery(100m, 100m, null, 10m),
+			new VatQuery(13m, null, 1.69m, 13m),
+			new VatQuery(null, 180000m, 30000m, 20m)
 		};
 		var handler = new VatHandler();
 		foreach (var input in inputs) {
@@ -43,12 +48,12 @@ public class VatCalc {
 		}
 	}
 	[Fact]
-	public async Task InvalidVatRateInput() {
+	public async Task ThrowInvalidVatRateInput() {
 		var inputs = new List<VatQuery>() {
 			new VatQuery(100m, 10m, null, 10.1m),
-			new VatQuery(13m, null, 14.69m, 10000m),
-			new VatQuery(null, 30000m, 180000m, -5m),
-			new VatQuery(null, 30000m, 180000m, 0m),
+			new VatQuery(13m, null, 1.69m, 10000m),
+			new VatQuery(null, 180000m, 30000m, -5m),
+			new VatQuery(null, 180000m, 30000m, 0m),
 		};
 		var handler = new VatHandler();
 		foreach (var input in inputs) {
