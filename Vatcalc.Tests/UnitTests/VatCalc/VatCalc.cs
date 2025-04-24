@@ -8,15 +8,16 @@ public class VatCalc {
 		var inputs = new List<VatQuery>() {
 			new VatQuery(100m, 110m, 10m, 10m),
 			new VatQuery(13m, 14.69m, 1.69m, 13m),
-			new VatQuery(150000m, 180000m, 30000m, 20m)
+			new VatQuery(150000m, 180000m, 30000m, 20m),
+			new VatQuery(-100m, -110m, -10m, 10m),
 		};
 		var handler = new VatHandler();
 		foreach (var input in inputs) {
-			var netInputResponse = await handler.Handle(new VatQuery(input.NetEur, null, null, input.VatRatePercentage), new CancellationToken());
+			var netInputResponse = await handler.Handle(new VatQuery(input.NetEur, null, null, input.VatRatePercent), new CancellationToken());
 			ValidateResponse(input, netInputResponse);
-			var grossInputResponse = await handler.Handle(new VatQuery(null, input.GrossEur, null, input.VatRatePercentage), new CancellationToken());
+			var grossInputResponse = await handler.Handle(new VatQuery(null, input.GrossEur, null, input.VatRatePercent), new CancellationToken());
 			ValidateResponse(input, grossInputResponse);
-			var vatAmountInputResponse = await handler.Handle(new VatQuery(null, null, input.VatAmountEur, input.VatRatePercentage), new CancellationToken());
+			var vatAmountInputResponse = await handler.Handle(new VatQuery(null, null, input.VatAmountEur, input.VatRatePercent), new CancellationToken());
 			ValidateResponse(input, vatAmountInputResponse);
 		}
 	}
@@ -24,7 +25,7 @@ public class VatCalc {
 		Assert.Equal(expected.NetEur, response.NetEur);
 		Assert.Equal(expected.GrossEur, response.GrossEur);
 		Assert.Equal(expected.VatAmountEur, response.VatAmountEur);
-		Assert.Equal(expected.VatRatePercentage, response.VatRatePercentage);
+		Assert.Equal(expected.VatRatePercent, response.VatRatePercent);
 	}
 	[Fact]
 	public async Task ThrowMissingOrInvalidAmountInput() {
