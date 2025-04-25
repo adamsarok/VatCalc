@@ -12,7 +12,10 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logge
 			exception, "Exception occurred: {Message} at {Time}", exception.Message, DateTime.UtcNow);
 
 		(string Detail, string Title, int StatusCode) details = exception switch {
-			InvalidAmountException or MoreThanOneInputException or InvalidVatRateException => (
+			InvalidAmountException 
+			or MoreThanOneInputException 
+			or InvalidVatRateException 
+			or BadHttpRequestException => (
 				exception.Message,
 				exception.GetType().Name,
 				StatusCodes.Status400BadRequest

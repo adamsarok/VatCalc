@@ -39,8 +39,8 @@ public static class GetVat {
 	}
 	public class VatModule : ICarterModule {
 		public void AddRoutes(IEndpointRouteBuilder app) {
-			app.MapGet("/vat", async ([FromQuery] decimal? netEur, decimal? grossEur, decimal? vatAmountEur, decimal vatRatePercent, ISender sender) => {
-				var result = await sender.Send(new VatQuery(netEur, grossEur, vatAmountEur, vatRatePercent));
+			app.MapGet("/vat", async ([AsParameters] VatQuery query, ISender sender) => {
+				var result = await sender.Send(query);
 				var response = result.Adapt<VatResponse>();
 				return Results.Ok(response);
 			})
