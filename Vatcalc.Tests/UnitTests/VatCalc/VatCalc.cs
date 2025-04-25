@@ -14,14 +14,14 @@ public class VatCalc {
 		var handler = new VatHandler();
 		foreach (var input in inputs) {
 			var netInputResponse = await handler.Handle(new VatQuery(input.NetEur, null, null, input.VatRatePercent), new CancellationToken());
-			ValidateResponse(input, netInputResponse);
+			ValidateResult(input, netInputResponse);
 			var grossInputResponse = await handler.Handle(new VatQuery(null, input.GrossEur, null, input.VatRatePercent), new CancellationToken());
-			ValidateResponse(input, grossInputResponse);
+			ValidateResult(input, grossInputResponse);
 			var vatAmountInputResponse = await handler.Handle(new VatQuery(null, null, input.VatAmountEur, input.VatRatePercent), new CancellationToken());
-			ValidateResponse(input, vatAmountInputResponse);
+			ValidateResult(input, vatAmountInputResponse);
 		}
 	}
-	private static void ValidateResponse(VatQuery expected, VatResponse response) {
+	private static void ValidateResult(VatQuery expected, VatResult response) {
 		Assert.Equal(expected.NetEur, response.NetEur);
 		Assert.Equal(expected.GrossEur, response.GrossEur);
 		Assert.Equal(expected.VatAmountEur, response.VatAmountEur);
