@@ -1,6 +1,6 @@
 ﻿using static VatCalc.API.Features.VatCalc.GetVat;
 
-namespace Vatcalc.Tests.Features.VatCalc;
+namespace VatCalc.Tests.Features.VatCalc;
 public class VatCalcUnitTests : VatCalcTestBase {
 
 	[Fact]

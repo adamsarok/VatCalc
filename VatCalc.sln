@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VatCalc.API", "VatCalc.API\VatCalc.API.csproj", "{7C0DD7E1-6C95-4531-B54B-790FE1B000AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vatcalc.Tests", "Vatcalc.Tests\Vatcalc.Tests.csproj", "{C1EF5B86-30FD-409F-AE1C-4E1EC207177A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VatCalc.Tests", "VatCalc.Tests\VatCalc.Tests.csproj", "{C1EF5B86-30FD-409F-AE1C-4E1EC207177A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,7 +1,7 @@
 ﻿
 using static VatCalc.API.Features.VatCalc.GetVat;
 
-namespace Vatcalc.Tests.Features.VatCalc;
+namespace VatCalc.Tests.Features.VatCalc;
 public class VatCalcTestBase {
 	protected List<VatQuery> SuccessInput = new List<VatQuery>() {
 		new VatQuery(100m, 110m, 10m, 10m),
