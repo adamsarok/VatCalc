@@ -32,6 +32,6 @@ app.UseHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks
 	ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
 
-app.Run();
+await app.RunAsync();
 
-public partial class Program { } //for system tests
+public partial class Program { } //to enable system tests with WebApplicationFactory<Program>

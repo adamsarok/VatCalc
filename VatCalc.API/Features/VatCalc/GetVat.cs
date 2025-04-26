@@ -33,8 +33,8 @@ public static class GetVat {
 	}
 
 	public class VatHandler : IRequestHandler<VatQuery, VatResult> {
-		public async Task<VatResult> Handle(VatQuery request, CancellationToken cancellationToken) {
-			return new VatResult(request.NetEur, request.GrossEur, request.VatAmountEur, request.VatRatePercent);
+		public Task<VatResult> Handle(VatQuery request, CancellationToken cancellationToken) {
+			return Task.FromResult(new VatResult(request.NetEur, request.GrossEur, request.VatAmountEur, request.VatRatePercent));
 		}
 	}
 	public class VatModule : ICarterModule {
