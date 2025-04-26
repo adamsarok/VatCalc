@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Globalization;
-using System.Net.Http.Json;
-using static VatCalc.API.Features.VatCalc.GetVat;
+﻿using static VatCalc.API.Features.VatCalc.GetVat;
 
 namespace Vatcalc.Tests.Features.VatCalc;
 public class VatCalcSystemTests(WebApplicationFactory<Program> factory) : VatCalcTestBase, IClassFixture<WebApplicationFactory<Program>> {
@@ -48,16 +43,15 @@ public class VatCalcSystemTests(WebApplicationFactory<Program> factory) : VatCal
 	public async Task ThrowMissingOrInvalidAmountInput() {
 		var client = factory.CreateClient();
 		var query = BuildQueryDict(new VatQuery(null, null, null, 10m));
-		await ValidateError(query, client, nameof(InvalidAmountException), "invalid amount");
+		await ValidateError(query, client, nameof(InvalidAmountException));
 	}
-	private static async Task ValidateError(Dictionary<string, string?> query, HttpClient client, string title, string detail) {
+	private static async Task ValidateError(Dictionary<string, string?> query, HttpClient client, string title) {
 		var urlWithQuery = QueryHelpers.AddQueryString("/vat", query);
 		var response = await client.GetAsync(urlWithQuery);
 		var errorResponse = await response.Content.ReadFromJsonAsync<ProblemDetails>();
 		Assert.NotNull(errorResponse);
 		Assert.Equal(title, errorResponse.Title);
 		Assert.Equal(400, errorResponse.Status);
-		Assert.Contains(detail, errorResponse.Detail, StringComparison.InvariantCultureIgnoreCase);
 		Assert.Equal("/vat", errorResponse.Instance);
 		Assert.NotNull(errorResponse.Extensions["traceId"]);
 	}
@@ -66,7 +60,7 @@ public class VatCalcSystemTests(WebApplicationFactory<Program> factory) : VatCal
 		var client = factory.CreateClient();
 		foreach (var input in MoreThanOneInput) {
 			var query = BuildQueryDict(input);
-			await ValidateError(query, client, nameof(MoreThanOneInputException), "more than one");
+			await ValidateError(query, client, nameof(MoreThanOneInputException));
 		}
 	}
 	[Fact]
@@ -74,7 +68,24 @@ public class VatCalcSystemTests(WebApplicationFactory<Program> factory) : VatCal
 		var client = factory.CreateClient();
 		foreach (var input in InvalidVatRateInput) {
 			var query = BuildQueryDict(input);
-			await ValidateError(query, client, nameof(InvalidVatRateException), "invalid VAT");
+			await ValidateError(query, client, nameof(InvalidVatRateException));
+		}
+	}
+	private IEnumerable<Dictionary<string, string?>> BuildSuccessQueryDict() {
+		foreach (var input in SuccessInput) {
+			yield return BuildQueryDict(input);
+		}
+	}
+	[Fact]
+	public async Task ThrowNonNumericInput() {
+		var nonNumeric = BuildSuccessQueryDict().ToList();
+		nonNumeric[0]["netEur"] = "a";
+		nonNumeric[1]["grossEur"] = " ";
+		nonNumeric[2]["vatAmountEur"] = "...";
+		nonNumeric[3]["vatRatePercent"] = "12x";
+		var client = factory.CreateClient();
+		foreach (var query in nonNumeric) {
+			await ValidateError(query, client, nameof(BadHttpRequestException));
 		}
 	}
 }

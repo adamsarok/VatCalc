@@ -15,10 +15,10 @@ public class VatCalcTestBase {
 		new VatQuery(null, 180000m, 30000m, 20m)
 	};
 	protected List<VatQuery> InvalidVatRateInput = new List<VatQuery>() {
-			new VatQuery(100m, 10m, null, 10.1m),
-			new VatQuery(13m, null, 1.69m, 10000m),
-			new VatQuery(null, 180000m, 30000m, -5m),
-			new VatQuery(null, 180000m, 30000m, 0m),
-		};
+		new VatQuery(100m, null, null, 10.1m),
+		new VatQuery(null, 14.69m, null, 10000m),
+		new VatQuery(null, null, 30000m, -5m),
+		new VatQuery(null, null, 30000m, 0m),
+	};
 }
 
